@@ -125,13 +125,16 @@ class JupyterLabHandler(Resource):
             app.log.trace("uuidcode={} - New Headers: {}".format(uuidcode, request_headers))
             app.log.trace("uuidcode={} - New Json: {}".format(uuidcode, request_json))
             
-            config = utils_file_loads.get_general_config()
+            if "SERVICELEVEL" in request_json.get("envrionments", {}).keys():
+                config = utils_file_loads.get_servicelevel_config(request_json.get("environments", {}).get("SERVICELEVEL", "default"))
+            else:
+                config = utils_file_loads.get_general_config()
             basefolder = config.get('basefolder', '<no basefolder defined>')
             userfolder = os.path.join(basefolder, request_json.get('email').replace("@", "_at_"))
             serverfolder = Path(os.path.join(userfolder, '.{}'.format(uuidcode)))
             mounts = jlab_utils.get_mounts(app.log, uuidcode, serverfolder, userfolder)
             
-            cmd = ["docker", "run"]
+            cmd = ["timeout", "{}".format(config.get('timeout', '30d')), "docker", "run"]
             cmd.append("--network")
             cmd.append(config.get("network"))
             cmd.append("--cap-add")
@@ -166,6 +169,8 @@ class JupyterLabHandler(Resource):
             cmd.append(str(request_json.get("port")))
             cmd.append(request_json.get("servername"))
             cmd.append(request_json.get("jupyterhub_api_url"))
+            #if request_json.get("service", "").lower() == "dashboard":
+            #    cmd.append(request_json.get())
             cmd.append("&")
             app.log.debug("uuidcode={} - Run Command: {}".format(uuidcode, cmd))
             subprocess.Popen(cmd)

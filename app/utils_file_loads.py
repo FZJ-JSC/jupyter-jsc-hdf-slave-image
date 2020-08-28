@@ -15,3 +15,8 @@ def get_general_config():
     with open('/etc/j4j/j4j_mount/j4j_docker/slave/config.json', 'r') as f:
         ret = json.load(f)
     return ret
+
+def get_servicelevel_config(servicelevel):
+    with open('/etc/j4j/j4j_mount/j4j_docker/slave/config_{}.json'.format(servicelevel), 'r') as f:
+        ret = json.load(f)
+    return ret
