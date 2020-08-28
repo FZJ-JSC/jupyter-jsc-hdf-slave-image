@@ -163,6 +163,8 @@ class JupyterLabHandler(Resource):
             cmd.append("{}={}".format("JUPYTERHUB_SERVICE_PREFIX", request_json.get("environments",{}).get("JUPYTERHUB_SERVICE_PREFIX", "")))
             cmd.append("-e")
             cmd.append("{}={}".format("JUPYTERHUB_BASE_URL", request_json.get("environments",{}).get("JUPYTERHUB_BASE_URL", "")))
+            cmd.append("-e")
+            cmd.append("{}={}".format("UNITYJSCACCESSTOKEN", request_json.get("environments", {}).get("UNITYJSCACCESSTOKEN")))
             cmd.extend(mounts)
             cmd.append(request_json.get("image"))
             cmd.append("/home/jovyan/.start.sh")
