@@ -85,6 +85,8 @@ class JupyterLabHandler(Resource):
             Headers:
                 Intern-Authorization: spawner_token
                 uuidcode
+                accesstoken
+                expire
             Body:
                 email
                 environments
@@ -164,9 +166,9 @@ class JupyterLabHandler(Resource):
             cmd.append("-e")
             cmd.append("{}={}".format("JUPYTERHUB_BASE_URL", request_json.get("environments",{}).get("JUPYTERHUB_BASE_URL", "")))
             cmd.append("-e")
-            cmd.append("{}={}".format("UNITYJSCACCESSTOKEN", request_json.get("environments", {}).get("UNITYJSCACCESSTOKEN")))
+            cmd.append("{}={}".format("UNITYJSCACCESSTOKEN", request.headers.get("accesstoken", "")))
             cmd.append("-e")
-            cmd.append("{}={}".format("UNITYJSCACCESSTOKENEXPIRATION", request_json.get("environments", {}).get("UNITYJSCACCESSTOKENEXPIRATION")))
+            cmd.append("{}={}".format("UNITYJSCACCESSTOKENEXPIRATION", request.headers.get("expire", "")))
             cmd.extend(mounts)
             cmd.append(request_json.get("image"))
             cmd.append("/home/jovyan/.start.sh")
