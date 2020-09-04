@@ -126,10 +126,11 @@ class JupyterLabHandler(Resource):
                 request_json[key.lower()] = value
             app.log.trace("uuidcode={} - New Headers: {}".format(uuidcode, request_headers))
             app.log.trace("uuidcode={} - New Json: {}".format(uuidcode, request_json))
-            
-            if "SERVICELEVEL" in request_json.get("envrionments", {}).keys():
-                config = utils_file_loads.get_servicelevel_config(request_json.get("environments", {}).get("SERVICELEVEL", "default"))
-            else:
+            servicelevel = request_headers.get('servicelevel', 'default')
+            try:
+                config = utils_file_loads.get_servicelevel_config(servicelevel)
+            except:
+                app.log.exception("uuidcode={} - Could not find config/quota file for {}. Use default config files.".format(uuidcode, servicelevel))
                 config = utils_file_loads.get_general_config()
             basefolder = config.get('basefolder', '<no basefolder defined>')
             userfolder = os.path.join(basefolder, request_json.get('email').replace("@", "_at_"))
