@@ -7,7 +7,7 @@ Created on Feb 12, 2020
 import os
 from pathlib import Path
 
-def get_mounts(app_logger, uuidcode, serverfolder, userfolder):
+def get_mounts(app_logger, uuidcode, serverfolder, userfolder, image):
     ret = []
     ret.append("--mount")
     ret.append("type=bind,src={},dst=/home/jovyan".format(serverfolder))
@@ -29,4 +29,13 @@ def get_mounts(app_logger, uuidcode, serverfolder, userfolder):
         if os.path.isdir(project):
             ret.append("--mount")
             ret.append("type=bind,src={project},dst=/home/jovyan/Projects/SharedProjects/{owner}_{name}".format(project=project, owner=owner, name=p.name))
+
+    try:
+        with open(os.environ.get("EASYBUILDIMAGESPATH"), "r") as f:
+            easybuildimages = json.load(f)
+    except:
+        easybuildimages = []
+    if image in easybuildimages:
+        ret.append("--mount")
+        ret.append("type=bind,src=/opt/apps/easybuild,dst=/opt/apps/easybuild,readonly")
     return ret

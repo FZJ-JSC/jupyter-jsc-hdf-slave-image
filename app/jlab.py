@@ -135,7 +135,7 @@ class JupyterLabHandler(Resource):
             basefolder = config.get('basefolder', '<no basefolder defined>')
             userfolder = os.path.join(basefolder, request_json.get('email').replace("@", "_at_"))
             serverfolder = Path(os.path.join(userfolder, '.{}'.format(uuidcode)))
-            mounts = jlab_utils.get_mounts(app.log, uuidcode, serverfolder, userfolder)
+            mounts = jlab_utils.get_mounts(app.log, uuidcode, serverfolder, userfolder, request_json.get("image"))
             
             cmd = ["timeout", "{}".format(config.get('timeout', '30d')), "docker", "run"]
             cmd.append("--network")
